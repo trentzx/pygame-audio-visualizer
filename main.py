@@ -3,6 +3,8 @@ import sys, math, wave, numpy, pygame
 from pygame.locals import *
 from scipy.fftpack import dct
 
+#Switches the number, width and heights of the bars and the FPS of them
+
 Number = 30 # number of bars
 HEIGHT = 600 # HEIGHT of a bar
 WIDTH = 40 #WIDTH of a bar
@@ -19,7 +21,7 @@ pygame.mixer.init()
 screen = pygame.display.set_mode([Number * WIDTH, 50 + HEIGHT])
 pygame.display.set_caption('Audio Visualizer')
 my_font = pygame.font.SysFont('consolas', 16)
-pygame.mixer.music.load("Frank Ocean - Pink + White.wav")
+pygame.mixer.music.load("Music.wav")
 pygame.mixer.music.play()
 pygame.mixer.music.set_endevent()
 pygame.mixer.music.set_volume(0.2)
@@ -29,7 +31,7 @@ status = "Playing"
 #The wave addon allows .WAV files which are audio files to be read and played.
 
 
-f = wave.open("Frank Ocean - Pink + White.wav", 'rb')
+f = wave.open("Music.wav", 'rb')
 params = f.getparams()
 nchannels, sampwidth, framerate, nframes = params[:4]
 str_data = f.readframes(nframes)
@@ -40,6 +42,7 @@ wave_data = wave_data.T
 
 num = nframes
 
+#finds frames and outputs wave data +number of revolutions p/minute
 def Visualizer(nums):
     num = int(nums)
     h = abs(dct(wave_data[0][nframes - num:nframes - num + Number]))
@@ -58,6 +61,8 @@ def vis(status):
         if num > 0:
             Visualizer(num)
 
+#This get_time will get the number of miliseconds that the music has been playing for
+
 def get_time():
     seconds = max(0, pygame.mixer.music.get_pos() / 1000)
     m, s = divmod(seconds, 60)
@@ -65,6 +70,7 @@ def get_time():
     hms = ("%02d:%02d:%02d" % (h, m, s))
     return hms
 
+#This controls the status in the top left of the screen with if/else statements.
 def controller(key):
     global status
     if status == "stopped":
@@ -86,12 +92,16 @@ def controller(key):
             pygame.mixer.music.pause()
             status = "paused"
 
+#This allows the bars to be displayed
+
 def draw_bars(h):
     bars = []
     for i in h:
         bars.append([len(bars) * WIDTH , 50 + HEIGHT - i, WIDTH - 1, i])
     for i in bars:
         pygame.draw.rect(screen, [255,255,255], i, 0)
+
+#This statement makes it so if you close the window, it will shut down the code and stop running as well as stop playing the .wav
 
 while True:
     for event in pygame.event.get():
